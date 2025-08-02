@@ -1,8 +1,10 @@
 streamlit
 requests
 psycopg2
+numpy
 pandas
 matplotlib
 yfinance
 openai
 qrcode
+tokenizers
