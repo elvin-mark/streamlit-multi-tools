@@ -1,0 +1,6 @@
+streamlit
+requests
+psycopg2
+pandas
+matplotlib
+yfinance
