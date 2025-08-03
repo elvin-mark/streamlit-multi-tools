@@ -2,10 +2,11 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
-from sklearn.datasets import load_digits, load_iris
+from sklearn.datasets import load_iris
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
-from mpl_toolkits.mplot3d import Axes3D
+import plotly.graph_objects as go
+
 
 st.set_page_config(
     page_title="📉 MLP Training & Loss Landscape Visualization", layout="wide"
@@ -279,6 +280,74 @@ if "losses" in st.session_state and "param_vectors" in st.session_state:
     ax3.legend()
 
     st.pyplot(fig3)
+
+    # 3D surface plot (Plotly)
+    fig2 = go.Figure(
+        data=[
+            go.Surface(
+                z=Z,
+                x=grid_x,
+                y=grid_y,
+                colorscale="Viridis",
+                opacity=0.8,
+                showscale=True,
+            ),
+            go.Scatter3d(
+                x=traj_x,
+                y=traj_y,
+                z=traj_z,
+                mode="lines+markers",
+                line=dict(color="red", width=4),
+                marker=dict(size=3),
+                name="Training Path",
+            ),
+        ]
+    )
+    fig2.update_layout(
+        title="Loss Landscape Around Final Model with Training Path",
+        scene=dict(
+            xaxis_title="PCA 1 (Perturbation)",
+            yaxis_title="PCA 2 (Perturbation)",
+            zaxis_title="Loss",
+        ),
+        margin=dict(l=0, r=0, b=0, t=30),
+    )
+
+    st.plotly_chart(fig2, use_container_width=True)
+
+    # Contour plot (Plotly)
+    fig3 = go.Figure()
+
+    fig3.add_trace(
+        go.Contour(
+            z=Z,
+            x=x_vals,
+            y=y_vals,
+            colorscale="Viridis",
+            contours_coloring="heatmap",
+            line_smoothing=0.85,
+        )
+    )
+
+    fig3.add_trace(
+        go.Scatter(
+            x=traj_x,
+            y=traj_y,
+            mode="lines+markers",
+            marker=dict(color="red"),
+            name="Training Path",
+        )
+    )
+
+    fig3.update_layout(
+        title="Loss Landscape Contour Around Final Model",
+        xaxis_title="PCA 1 (Perturbation)",
+        yaxis_title="PCA 2 (Perturbation)",
+        height=600,
+    )
+
+    st.plotly_chart(fig3, use_container_width=True)
+
 
 else:
     st.info("Train the model to see training loss and loss landscape.")
